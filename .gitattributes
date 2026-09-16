@@ -1,16 +1,35 @@
-# 让 Git LFS 接管大二进制文件，避免 GitHub 100MB 单文件上限
-*.exe   filter=lfs diff=lfs merge=lfs -text
-*.zip   filter=lfs diff=lfs merge=lfs -text
-*.7z    filter=lfs diff=lfs merge=lfs -text
-*.pck   filter=lfs diff=lfs merge=lfs -text
+# Git LFS 规则
+#
+# 策略：仓库里只放「源码 + 素材」，不放导出产物。
+# 导出的 exe/pck/zip 一律走 GitHub Releases 分发，
+# 因为 LFS 免费额度只有每月 1GB 流量，大 exe 被 clone 几次就耗光。
+# 所以这里不再有 *.exe 的 LFS 规则（.gitignore 已把 exe 全部排除）。
 
-# 音频 / 字体等大资源也走 LFS
+# 音频
 *.ogg   filter=lfs diff=lfs merge=lfs -text
 *.wav   filter=lfs diff=lfs merge=lfs -text
 *.mp3   filter=lfs diff=lfs merge=lfs -text
+*.flac  filter=lfs diff=lfs merge=lfs -text
+
+# 字体
 *.ttf   filter=lfs diff=lfs merge=lfs -text
 *.otf   filter=lfs diff=lfs merge=lfs -text
+*.woff  filter=lfs diff=lfs merge=lfs -text
+*.woff2 filter=lfs diff=lfs merge=lfs -text
 
-# 图片保持普通处理，体积极小，方便在网页端直接看 diff
+# 3D 模型（第 5-7 个游戏会用到）
+*.glb   filter=lfs diff=lfs merge=lfs -text
+*.gltf  filter=lfs diff=lfs merge=lfs -text
+*.fbx   filter=lfs diff=lfs merge=lfs -text
+*.obj   filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+
+# 大贴图（3D 项目的贴图动辄几十 MB）
+*.hdr   filter=lfs diff=lfs merge=lfs -text
+*.exr   filter=lfs diff=lfs merge=lfs -text
+
+# 图片保持普通处理，体积极小，方便在 GitHub 网页端直接看 diff
 *.png   text
 *.jpg   text
+*.jpeg  text
+*.svg   text

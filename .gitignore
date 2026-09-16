@@ -21,24 +21,41 @@
 *.translation
 
 # ============================================================
-#  导出的可执行文件
-#  下面的 *.exe / *.zip 只是拦住散落在仓库根目录的临时导出物；
-#  builds/ 里正式发布用的构建走 Git LFS 追踪（见 .gitattributes），
-#  所以要用 ! 反向放行。
+#  导出的可执行文件 —— 一律不进仓库，改由 GitHub Releases 分发
+#
+#  为什么：Git LFS 免费额度只有每月 1GB 流量，
+#  一个 105MB 的 exe 被 clone 几次就把额度耗光了。
+#  放进 Releases 的二进制不占 LFS 流量。
+#
+#  发新版本的流程：
+#    1. 在 Godot 里导出到   <项目>/builds/windows/
+#    2. 本地打标签：        git tag v1.1-frogger
+#    3. 推到远端：          git push --tags
+#    4. 在 GitHub 网页 Release 页面上传 exe 附件
+#  （也可以直接用一个 Personal Access Token 调 API 上传，
+#    见 push.ps1 里的 New-Release 用法说明）
 # ============================================================
-/*.exe
-/*.zip
-/*.pck
-/*.console.exe
+*.exe
+*.zip
+*.pck
+*.apk
+*.dmg
 
-# builds 目录下的导出产物正常纳入版本库（由 LFS 接管存储）
-!01.Frogger/builds/**
-!02.Metroid/builds/**
-!03.Farming/builds/**
-!04.Monster/builds/**
-!05.Space/builds/**
-!06.3DPlatformer/builds/**
-!07.Shooter/builds/**
+# 本地构建产物目录整个忽略，只保留目录说明文件
+01.Frogger/builds/**
+!01.Frogger/builds/README.md
+02.Metroid/builds/**
+!02.Metroid/builds/README.md
+03.Farming/builds/**
+!03.Farming/builds/README.md
+04.Monster/builds/**
+!04.Monster/builds/README.md
+05.Space/builds/**
+!05.Space/builds/README.md
+06.3DPlatformer/builds/**
+!06.3DPlatformer/builds/README.md
+07.Shooter/builds/**
+!07.Shooter/builds/README.md
 
 # ============================================================
 #  Windows / 编辑器
