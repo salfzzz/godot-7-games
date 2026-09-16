@@ -37,7 +37,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-# 仓库根目录 = 脚本所在目录
+# 仓库根目录 = 脚本所在目录（所以从任何子目录运行都能工作）
 $repoRoot = $PSScriptRoot
 Set-Location $repoRoot
 
@@ -47,8 +47,15 @@ function Write-Warn2($text){ Write-Host "    $text" -ForegroundColor Yellow }
 function Write-Err2($text) { Write-Host "    $text" -ForegroundColor Red }
 
 # ---------- 0. 前置检查 ----------
+# 这个脚本是 PowerShell 脚本，不能在 cmd.exe 里直接运行（会报 Access is denied）。
+if ($PSVersionTable.PSEdition -eq 'Desktop' -and $PSVersionTable.PSVersion.Major -lt 5) {
+    Write-Err2 "PowerShell 版本过低（需要 5.1+）。请用 pwsh 或 Windows PowerShell 运行。"
+    exit 1
+}
+
 if (-not (Test-Path (Join-Path $repoRoot '.git'))) {
-    Write-Err2 "当前目录不是 git 仓库根目录：$repoRoot"
+    Write-Err2 "脚本所在目录不是 git 仓库根目录：$repoRoot"
+    Write-Host "    请确认 push.ps1 位于 D:\Godot\Godot_source\ 下。" -ForegroundColor DarkGray
     exit 1
 }
 
@@ -123,7 +130,7 @@ if (-not $Message) {
 if ($Message -notmatch '^\w+(\(.+\))?:') {
     $scope = 'repo'
     $changed = $staged | Select-Object -First 1
-    if ($changed -match '^(\d\d\.[^/\\]+)') { $scope = $Matches[1].ToLower() }
+    if ($changed -match '^(\d\d\.[^/\\]+)') { $scope = $Matches[1] }
     $Message = "feat($scope): $Message"
     Write-Ok "自动补全为：$Message"
 }
