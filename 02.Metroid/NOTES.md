@@ -6,7 +6,11 @@
 - 确认输入映射已内置：left(A) / right(D) / jump(空格) / shoot(鼠标左键)
 - 确认本机 Godot 版本为 **4.7.2.stable**，课程录制用的是 4.4，菜单可能略有差异
 - 确认 `.md` 文件在 Godot 脚本编辑器里可以当纯文本打开编辑（无 Markdown 渲染）
-- 下一步：搭建玩家场景
+
+## 2026-09-17
+
+- 新建 Level 场景，文件存放在新建的 `scenes/levels/` 文件夹中
+- 在 Level 场景里新建了 StaticBody2D 和 CollisionShape2D
 
 ### 待办
 
