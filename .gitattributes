@@ -1,0 +1,16 @@
+# 让 Git LFS 接管大二进制文件，避免 GitHub 100MB 单文件上限
+*.exe   filter=lfs diff=lfs merge=lfs -text
+*.zip   filter=lfs diff=lfs merge=lfs -text
+*.7z    filter=lfs diff=lfs merge=lfs -text
+*.pck   filter=lfs diff=lfs merge=lfs -text
+
+# 音频 / 字体等大资源也走 LFS
+*.ogg   filter=lfs diff=lfs merge=lfs -text
+*.wav   filter=lfs diff=lfs merge=lfs -text
+*.mp3   filter=lfs diff=lfs merge=lfs -text
+*.ttf   filter=lfs diff=lfs merge=lfs -text
+*.otf   filter=lfs diff=lfs merge=lfs -text
+
+# 图片保持普通处理，体积极小，方便在网页端直接看 diff
+*.png   text
+*.jpg   text
