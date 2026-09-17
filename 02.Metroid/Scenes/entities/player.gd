@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 var direction_x : float
-var speed :=    100
+var speed :=    150
 var jump_strength := 500  #跳跃高度 
 var gravity := 1500
 var facing := 1  #控制左右朝向的变量
