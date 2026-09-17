@@ -1,8 +1,82 @@
 [gd_scene format=3 uid="uid://ed60lwykumhf"]
 
 [ext_resource type="Script" uid="uid://ciywd01lommnp" path="res://scenes/entities/player.gd" id="1_ucweq"]
+[ext_resource type="Texture2D" uid="uid://de5wf7al0hknv" path="res://graphics/characters/player.png" id="2_08t41"]
+[ext_resource type="Texture2D" uid="uid://otyoj5px7yk7" path="res://graphics/ui/crosshair.png" id="3_1ie0h"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wp5od"]
+
+[sub_resource type="Animation" id="Animation_08t41"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Legs:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
+
+[sub_resource type="Animation" id="Animation_1ie0h"]
+resource_name = "Run"
+length = 1.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Legs:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8, 1, 1.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [9, 10, 11, 12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_42nxq"]
+resource_name = "idle"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Legs:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [16]
+}
+
+[sub_resource type="Animation" id="Animation_5u6hq"]
+resource_name = "jump"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Legs:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [17]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_42nxq"]
+_data = {
+&"RESET": SubResource("Animation_08t41"),
+&"Run": SubResource("Animation_1ie0h"),
+&"idle": SubResource("Animation_42nxq"),
+&"jump": SubResource("Animation_5u6hq")
+}
 
 [node name="Player" type="CharacterBody2D" unique_id=99830531]
 script = ExtResource("1_ucweq")
@@ -19,3 +93,25 @@ position_smoothing_speed = 15.0
 [node name="ReloadTimer" type="Timer" parent="." unique_id=643015030]
 wait_time = 0.5
 one_shot = true
+
+[node name="Legs" type="Sprite2D" parent="." unique_id=1624778484]
+position = Vector2(0, -6)
+texture = ExtResource("2_08t41")
+hframes = 8
+vframes = 3
+frame = 8
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1107361878]
+libraries/ = SubResource("AnimationLibrary_42nxq")
+autoplay = &"jump"
+
+[node name="Torso" type="Sprite2D" parent="." unique_id=389459762]
+position = Vector2(0, -9)
+texture = ExtResource("2_08t41")
+hframes = 8
+vframes = 3
+frame = 7
+
+[node name="Marker" type="Sprite2D" parent="." unique_id=2079438591]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("3_1ie0h")

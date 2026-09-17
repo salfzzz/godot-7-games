@@ -33,7 +33,32 @@
 - 接下来修改 子弹初始生成的位置和方向， 同样需要在level场景，接收到信号后，调用bullet脚本中自定义的setup函数，由bullet脚本来执行
 setup函数编写在bullet脚本中，里面用于处理子弹生成的位置 和方向向量，同时还要在_physics_process新增子弹飞行的逻辑
 
+- 准备进行角色的动画创建， 这次使用AnimationPlayer节点，首先将素材导入sprite2d，在检查器里面的animation动画中切割帧，将其分成一帧一帧的动画，
+- 在animationplayer中新建动画，对sprite2d里的frame构建动画,分别对奔跑和停止两种行为创建动画
+ 创建完成后要在player的脚本中实现两种动画的切换
+- 设置animation函数，对$AnimationPlayer 的实际播放动画（current_animation 进行检查，如果x轴方向向量不ie，设置为run奔跑动画，反之则设置为idle待机等待状态
+ 同时在其中添加向左移动时更改贴图朝向的逻辑，通过 $Legs.flip_h = direction_x < 0 实现
+- 实现跳跃逻辑，用character自带的on_the_floor函数，检查角色是否在地面上，在地面上则播放待机或奔跑，不在则播放跳跃
+- 接下来进行躯干的动画处理，由于躯干的朝向取决于角色射击的方向，所以不能用animationplayer处理
+处理方法如下 
+’‘
+	同时构建字典对应八个射击方向
+	const gun_directions = {        #用于控制枪械朝向的字典
+	Vector2i(1,0) : 0 ,	Vector2i(1,1) : 1 ,	Vector2i(0,1) : 2 ,	Vector2i(-1,1) : 3 ,	Vector2i(-1,0) : 4 ,
+		Vector2i(-1,-1) : 5 ,	Vector2i(0,-1) : 6 ,	Vector2i(1,-1) : 7 
+}
+	var raw_dir = get_local_mouse_position().normalized()   //获取鼠标指向的方向向量作为初始的方向向量
+	var adjust_dir  = Vector2(round(raw_dir.x), round(raw_dir.y))    //再用round（）函数对初始的数值进行四舍五入的处理，这样只会输出三个所需的值 （1，0，1）
+	最后调用 Torso.frame  = gun_direction[adjust_dir] 把转换后的方向生成的vector2值进行字典匹配，更改对应的躯干朝向
+’‘
 ---------------
+- 后续进行准星的开发调试，首先同样在player中创建spire2d节点，然后新建animationplayer2d节点，里面主要实现的是准星缩放的动画效果，
+在把动画效果导入后，需要在get_input函数下实现逻辑：当点击射击键时，不仅需要发射子弹，还要显示准星的缩放
+上述实现过于繁杂，可以使用更简单的实现方式，我们可以采用tween差值动画方法：
+
+首先需要定义新tween实例，再通过get_tree获取场景树，进而create_tween将新实例赋值给变量
+紧接着用tween_property(节点类型,需要修改的属性，用于过度的目标数值，动画持续的时长)赋值给新实例
+
 ### 待办
 
 - [√] 搭建玩家场景（`scenes/player.tscn`）
@@ -57,3 +82,15 @@ setup函数编写在bullet脚本中，里面用于处理子弹生成的位置 �
  暂时的修复方法是 在level的2D场景下， ** 把entities节点和bullets节点都统一放在0，0原点处 ** 
 
 - 此时运行时我发现子弹生成时看起来像从远方飞过来的，关掉物理插值后该问题解决，但是角色会产生剧烈抖动，待解决
+- 完成跳跃动画逻辑后，发现小ug 目前在向左跳跃的过程中。若在跳跃过程中松开a按键，会导致动画强制转向成右侧跳跃的样式
+- *** 修改方法 ：  新建一个控制朝向的变量，在有输入的时候监测是否需要水平轴反转，如下列逻辑：
+
+‘’
+func animation():
+	if direction_x != 0:  //#如果存在左右方向非0
+		facing = sign(direction_x)   //facing是控制朝向的变量
+	$Legs.flip_h = facing < 0  //若朝向向量为负（既为左方向），此时facing为1，判断条件会返回true 则设置水平轴翻转
+	...
+’‘ ***
+
+-
