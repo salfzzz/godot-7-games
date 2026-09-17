@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://ed60lwykumhf"]
+
+[ext_resource type="Script" uid="uid://ciywd01lommnp" path="res://scenes/entities/player.gd" id="1_ucweq"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wp5od"]
+
+[node name="Player" type="CharacterBody2D" unique_id=99830531]
+script = ExtResource("1_ucweq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=94156891]
+position = Vector2(0, 1)
+shape = SubResource("CapsuleShape2D_wp5od")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=620183721]
+zoom = Vector2(3, 3)
+position_smoothing_enabled = true
+position_smoothing_speed = 15.0
+
+[node name="ReloadTimer" type="Timer" parent="." unique_id=643015030]
+wait_time = 0.5
+one_shot = true

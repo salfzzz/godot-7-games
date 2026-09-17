@@ -1,12 +1,25 @@
 [gd_scene format=3 uid="uid://dny041yug0knc"]
 
+[ext_resource type="PackedScene" uid="uid://ed60lwykumhf" path="res://scenes/entities/player.tscn" id="1_377w7"]
+[ext_resource type="Script" uid="uid://tqgb6tio0scc" path="res://scenes/levels/level.gd" id="1_bovvr"]
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wp5od"]
 size = Vector2(241, 111)
 
 [node name="Level" type="Node2D" unique_id=984913068]
+script = ExtResource("1_bovvr")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=189090515]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1656822442]
-position = Vector2(133, 76)
+position = Vector2(29, 110)
 shape = SubResource("RectangleShape2D_wp5od")
+
+[node name="Entities" type="Node2D" parent="." unique_id=2009072974]
+
+[node name="Player" parent="Entities" unique_id=99830531 instance=ExtResource("1_377w7")]
+position = Vector2(0, 1)
+
+[node name="Bullets" type="Node2D" parent="." unique_id=1647476203]
+
+[connection signal="shoot" from="Entities/Player" to="." method="_on_player_shoot"]
