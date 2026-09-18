@@ -89,6 +89,10 @@ shape = SubResource("CapsuleShape2D_wp5od")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=620183721]
 zoom = Vector2(3, 3)
+limit_left = -142
+limit_top = -128
+limit_right = 2243
+limit_bottom = 1088
 position_smoothing_enabled = true
 position_smoothing_speed = 15.0
 
