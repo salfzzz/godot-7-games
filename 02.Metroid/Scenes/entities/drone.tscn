@@ -4,6 +4,41 @@
 [ext_resource type="Script" uid="uid://cqu8uq7o3bnde" path="res://scenes/entities/drone.gd" id="1_n87ok"]
 [ext_resource type="Texture2D" uid="uid://bav7n447bnsa5" path="res://graphics/fire/explosion.png" id="3_xcp44"]
 [ext_resource type="Texture2D" uid="uid://dijla4pisrrw8" path="res://graphics/lights/main.png" id="4_0tq5o"]
+[ext_resource type="AudioStream" uid="uid://dtnqyh7corvdx" path="res://audio/explosion.wav" id="5_6vf5s"]
+
+[sub_resource type="VisualShaderNodeColorParameter" id="VisualShaderNodeColorParameter_0tq5o"]
+parameter_name = "ColorParameter"
+default_value_enabled = true
+
+[sub_resource type="VisualShaderNodeMix" id="VisualShaderNodeMix_0tq5o"]
+default_input_values = [0, Vector3(0, 0, 0), 1, Vector3(1, 1, 1), 2, Vector3(0.5, 0.5, 0.5)]
+op_type = 3
+
+[sub_resource type="VisualShaderNodeInput" id="VisualShaderNodeInput_6vf5s"]
+input_name = "color"
+
+[sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_in55t"]
+parameter_name = "Progress"
+
+[sub_resource type="VisualShader" id="VisualShader_0tq5o"]
+mode = 1
+flags/light_only = false
+nodes/fragment/0/position = Vector2(624, 160)
+nodes/fragment/2/node = SubResource("VisualShaderNodeColorParameter_0tq5o")
+nodes/fragment/2/position = Vector2(-32, 128)
+nodes/fragment/3/node = SubResource("VisualShaderNodeMix_0tq5o")
+nodes/fragment/3/position = Vector2(400, 224)
+nodes/fragment/4/node = SubResource("VisualShaderNodeInput_6vf5s")
+nodes/fragment/4/position = Vector2(-160, 368)
+nodes/fragment/5/node = SubResource("VisualShaderNodeFloatParameter_in55t")
+nodes/fragment/5/position = Vector2(208, 448)
+nodes/fragment/connections = PackedInt32Array(2, 0, 3, 0, 3, 0, 0, 0, 4, 0, 3, 1, 5, 0, 3, 2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mbbpy"]
+resource_local_to_scene = true
+shader = SubResource("VisualShader_0tq5o")
+shader_parameter/ColorParameter = Color(1, 1, 1, 1)
+shader_parameter/Progress = 1.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_n87ok"]
 atlas = ExtResource("1_gs6nb")
@@ -45,7 +80,7 @@ animations = [{
 radius = 5.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_k56px"]
-radius = 62.0
+radius = 73.00685
 
 [sub_resource type="Animation" id="Animation_xcp44"]
 length = 0.001
@@ -73,6 +108,17 @@ tracks/1/keys = {
 "update": 0,
 "values": [2.36]
 }
+tracks/2/type = "audio"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AudioStreamPlayer2D")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"clips": [],
+"times": PackedFloat32Array()
+}
+tracks/2/use_blend = true
 
 [sub_resource type="Animation" id="Animation_6vf5s"]
 resource_name = "Redlight"
@@ -120,6 +166,21 @@ tracks/1/keys = {
 "method": &"change_reaction"
 }]
 }
+tracks/2/type = "audio"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AudioStreamPlayer2D")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"clips": [{
+"end_offset": 0.18758428,
+"start_offset": 0.0,
+"stream": ExtResource("5_6vf5s")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/2/use_blend = true
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_6vf5s"]
 _data = {
@@ -129,7 +190,7 @@ _data = {
 }
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vkdpk"]
-radius = 13.0
+radius = 11.0
 
 [node name="Drone" type="CharacterBody2D" unique_id=1728772267 groups=["无人机"]]
 collision_layer = 4
@@ -137,13 +198,13 @@ collision_mask = 11
 script = ExtResource("1_n87ok")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=290271788]
+material = SubResource("ShaderMaterial_mbbpy")
 sprite_frames = SubResource("SpriteFrames_wp5od")
 autoplay = "default"
-frame_progress = 0.42606792
+frame_progress = 0.11925874
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1427291515]
 visible = false
-position = Vector2(-1, 1)
 shape = SubResource("CircleShape2D_wp5od")
 
 [node name="DetectionArea" type="Area2D" parent="." unique_id=529914808]
@@ -181,6 +242,9 @@ color = Color(0.9389541, 4.5724214e-06, 1.540184e-06, 1)
 energy = 2.36
 texture = ExtResource("4_0tq5o")
 texture_scale = 0.1
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1772606316]
+volume_db = -15.044
 
 [connection signal="body_entered" from="DetectionArea" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="DetectionArea" to="." method="_on_detection_area_body_exited"]

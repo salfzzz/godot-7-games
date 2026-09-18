@@ -7,6 +7,7 @@ var is_active : bool = false    #无人机是否还能继续行动
 var last_dir := Vector2.ZERO    #最后无人机运动的方向
 var health := 3					#无人机的生命值
 
+
 func _on_detection_area_body_entered(body: CharacterBody2D) -> void:
 	player = body  #将角色实际的实体传入全局变量player中
 	is_active = true
@@ -31,15 +32,22 @@ func _physics_process(_delta: float) -> void:
 func _on_last_timer_timeout() -> void:   #设置计时器的信号量，一旦2秒时间结束，则对应的变量设置为false
 	is_active = false
 
+func go_to_end_title() -> void:
+	get_tree().change_scene_to_file("res://scenes/Title/end_title.tscn")
 
 func _on_collision_area_body_entered(_body: Node2D) -> void:  #一旦无人机爆炸检测范围检测到角色进入，则播放爆炸动画
 	explode()
+	go_to_end_title.call_deferred()
 	
 	
 func hit():
 	health -= 1
 	if health <= 0:
 		explode()
+	var tween = create_tween()
+	tween.tween_property($AnimatedSprite2D.material , "shader_parameter/Progress",0.0,0.3)	
+	tween.tween_property($AnimatedSprite2D.material , "shader_parameter/Progress",1.0,0.5)	
+	# $AnimatedSprite2D.material.set_shader_parameter("Progress",0.0)
 	
 func explode():  #专门用于处理爆炸销毁的函数
 		speed = 0   #无人机速度降为0

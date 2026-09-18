@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 var direction_x : float
-var speed :=    150
+var speed :=    120
 var jump_strength := 500  #跳跃高度 
 var gravity := 1500
 var facing := 1  #控制左右朝向的变量
@@ -22,7 +22,7 @@ signal shoot(pos :Vector2 , dir : Vector2 ) #新建发射信号，内部参数�
  
 func get_input():  #读取键盘输入并改
 	direction_x = Input.get_axis("left","right")
-	if Input.is_action_just_pressed("jump"):   #如果input检测到输入空格跳跃
+	if Input.is_action_just_pressed("jump") and is_on_floor():   #如果input检测到输入空格跳跃
 		velocity.y = -jump_strength    #想要的跳跃高度，在代码中需要表示为负数
 	if Input.is_action_just_pressed("shoot") and $ReloadTimer.time_left == 0:
 		print("Shoot!")

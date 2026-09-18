@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://nss02ym145bd" path="res://graphics/fire/default.png" id="1_2flq5"]
 [ext_resource type="Script" uid="uid://cv8w5n4rjiysm" path="res://scenes/bullets/bullet.gd" id="1_5f1na"]
+[ext_resource type="AudioStream" uid="uid://tkjj51je3two" path="res://audio/laser.wav" id="3_lj7gv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5f1na"]
 size = Vector2(5, 2)
@@ -17,5 +18,9 @@ texture = ExtResource("1_2flq5")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=723164603]
 shape = SubResource("RectangleShape2D_5f1na")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=369774194]
+stream = ExtResource("3_lj7gv")
+volume_db = -10.616
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

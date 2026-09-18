@@ -126,6 +126,37 @@ var adjust_dir  = Vector2(round(raw_dir.x), round(raw_dir.y))    //再用round�
 	
 	实现无人机灯光变化：要将pointlight挂载到无人机节点下，再调整大小和色彩，最后把pointlight加入到animationplayer中
 	根据energy的值来实现灯光的闪烁效果   
+	
+	- 编辑着色器
+	 着色器的编辑需要点击你想要调节的物体贴图的节点的“检查器”选项，其中Material中新建shader，shader类型分为多种，
+	 点击创建想要的shader类型后，再次点击圆球，可以展开编辑页面，右键编辑页面空白处可以新增节点，供操作使用
+	
+	为了实现闪烁，在shader编辑器中新建colorparameter，将其与“输出端”的Color连接，这样我们就能自由的在GDscript中修改贴图颜色
+	我们主要通过贴图的原图片和加上白色后的mix版本进行闪烁功能的实现，所以shader编辑器里要调用 ： (ColorParameter, 输入端的Color，FloatParameter，Mix和本身自带的输出端)
+	此时由于连接了ColorParameter和Floatparameter,我们可以在脚本里编写代码控制数值的变化。
+	在无人机脚本的hit函数中，调用	$AnimatedSprite2D.material.set_shader_parameter("Progress",0.0)  ，通过set_shader_parameter来调用修改参数
+		因为是为了实现闪烁，需要用动画控制，这里选用tween来控制，用这两行实现：
+	''     				( 需要修改的节点，对应节点对象的具体修改数据项，修改后的数值，持续的时间    )
+	tween.tween_property($AnimatedSprite2D.material , "shader_parameter/Progress,",0.0,0.3)	
+	tween.tween_property($AnimatedSprite2D.material , "shader_parameter/Progress,",1.0,0.5)	
+	''
+	
+	- 后续收尾
+	 1.给子弹添加射出音效，主要使用audiostreamplayer2d节点，并且在 bullet脚本中，一旦子弹生成，则 调用$AudioStreamPlayer2D.play()  ，播放音效。
+	 2. 同理，爆炸音效在爆炸函数内，一旦进入函数，先调用音效，但是会出现响2次的情况，所以我们在爆炸动画中新建音频轨道，这样触发一次动画，只播放一次音频
+	 3. 实现一些课程未涉及的方面，如标题界面，我才采用了两个标题，分别处理开始游戏和结束游戏，同时把游戏主场景设置为start_title,让其进行（按下空格）跳转的逻辑：
+	   ''
+	func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("jump"):
+		get_viewport().set_input_as_handled()   # 防止同一次按键被后续场景重复响应
+		get_tree().change_scene_to_file("res://scenes/levels/level.tscn")
+  ''
+	同时为了不在信号回调期间切换场景，采用延迟切换结束游戏场景的模式，创建 
+	''func go_to_end_title() -> void:
+	get_tree().change_scene_to_file("res://scenes/Title/end_title.tscn")
+	''
+	后，让爆炸函数里面延迟调用 go_to_end_title() ，既go_to_end_title().call_deferred  避免问题
+
 ## 待办
 
 - [x] 搭建玩家场景（`scenes/player.tscn`）
@@ -177,3 +208,6 @@ func animation():
 ##9-18 w=问题记录
  想实现角色离开检测区域后2秒内，无人机仍跟随原方向移动，后续发现是if的语句有问题，对veloity的运动使用，需要在整个func _physics_process(_delta: float) -> void:
 函数种使用，只有计时器时间超过2秒，触发停止，将velocity改为vector2.zero，其余时刻都正常向last_dir  * speed 方向移动
+
+实现击中无人机造成闪烁的过程中，射击之后所有无人机都会发生变色，解决方法是在shader相关页面中，点击 local_to_scene,即可
+处理爆炸声音时，会出现响2次的情况，所以我们在爆炸动画中新建音频轨道，这样触发一次动画，只播放一次音频

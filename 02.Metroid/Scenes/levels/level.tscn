@@ -2892,7 +2892,37 @@ tile_set = SubResource("TileSet_ouxo3")
 position = Vector2(0, 1)
 
 [node name="Drone" parent="Entities" unique_id=1728772267 instance=ExtResource("5_urvlt")]
-position = Vector2(217, -78)
+position = Vector2(226, -33)
+
+[node name="Drone2" parent="Entities" unique_id=439749506 instance=ExtResource("5_urvlt")]
+position = Vector2(1622, 737)
+
+[node name="Drone3" parent="Entities" unique_id=77454151 instance=ExtResource("5_urvlt")]
+position = Vector2(1190, -47)
+
+[node name="Drone4" parent="Entities" unique_id=469537260 instance=ExtResource("5_urvlt")]
+position = Vector2(1704, 331)
+
+[node name="Drone5" parent="Entities" unique_id=51608 instance=ExtResource("5_urvlt")]
+position = Vector2(721, 763)
+
+[node name="Drone6" parent="Entities" unique_id=543801784 instance=ExtResource("5_urvlt")]
+position = Vector2(1102, 329)
+
+[node name="Drone7" parent="Entities" unique_id=1220687297 instance=ExtResource("5_urvlt")]
+position = Vector2(407, 782)
+
+[node name="Drone8" parent="Entities" unique_id=1586852780 instance=ExtResource("5_urvlt")]
+position = Vector2(330, 469)
+
+[node name="Drone9" parent="Entities" unique_id=1947411459 instance=ExtResource("5_urvlt")]
+position = Vector2(580, -68)
+
+[node name="Drone10" parent="Entities" unique_id=575160839 instance=ExtResource("5_urvlt")]
+position = Vector2(497, 50)
+
+[node name="Drone11" parent="Entities" unique_id=497699995 instance=ExtResource("5_urvlt")]
+position = Vector2(637, 330)
 
 [node name="Bullets" type="Node2D" parent="." unique_id=1647476203]
 

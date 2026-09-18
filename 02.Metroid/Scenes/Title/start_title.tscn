@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://c5mev8xbrgq6f"]
+
+[ext_resource type="Script" uid="uid://nhwywkjava8a" path="res://scenes/Title/start_title.gd" id="1_mt2d6"]
+[ext_resource type="FontFile" uid="uid://hqpa84d2dqvp" path="res://fonts/Better VCR 9.0.1.ttf" id="2_uicxs"]
+[ext_resource type="Texture2D" uid="uid://umouuttstq53" path="res://icon.svg" id="3_xgm7k"]
+
+[node name="Control" type="Control" unique_id=1102931174]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mt2d6")
+
+[node name="Panel" type="Panel" parent="." unique_id=1068617991]
+layout_mode = 0
+offset_right = 60.0
+offset_bottom = 95.0
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=94761007]
+layout_mode = 0
+offset_left = 3.0
+offset_top = -1.0
+offset_right = 1278.0
+offset_bottom = 716.0
+color = Color(0.1288298, 0.12882978, 0.12882978, 1)
+
+[node name="Label" type="Label" parent="." unique_id=339333583]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -158.0
+offset_top = -94.5
+offset_right = 188.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.9347751, 0.7317965, 0.71793026, 1)
+theme_override_fonts/font = ExtResource("2_uicxs")
+theme_override_font_sizes/font_size = 64
+text = "Game Start"
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=490892731]
+layout_mode = 0
+offset_left = 581.0
+offset_top = 375.0
+offset_right = 709.0
+offset_bottom = 503.0
+texture = ExtResource("3_xgm7k")
