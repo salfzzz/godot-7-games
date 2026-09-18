@@ -8,7 +8,7 @@
 | 序号 | 项目 | 类型 | 状态 |
 |:---:|---|---|---|
 | 01 | [Frogger](01.Frogger/) | 2D 过马路 | ✅ 已完成（[可执行版](https://github.com/salfzzz/godot-7-games/releases/tag/v1.0-frogger)） |
-| 02 | [Metroid](02.Metroid/) | 2D 平台射击 | 🚧 进行中（环境就绪，搭建玩家场景） |
+| 02 | [Metroid](02.Metroid/) | 2D 平台射击 | ✅ 已完成（[可执行版](https://github.com/salfzzz/godot-7-games/releases/tag/v1.0-metroid)） |
 | 03 | [Farming](03.Farming/) | 2D 农场经营 | ⬜ 未开始 |
 | 04 | [Monster](04.Monster/) | 回合制战斗 | ⬜ 未开始 |
 | 05 | [Space](05.Space/) | 3D 太空射击 | ⬜ 未开始 |

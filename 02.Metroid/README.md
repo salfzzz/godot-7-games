@@ -26,16 +26,30 @@
 
 - [x] 导入课程初始工程（素材 + `project.godot`）
 - [x] 确认素材齐全、输入映射可用
-- [ ] 搭建玩家场景 ← **下一步**
-- [ ] 角色基础移动
-- [ ] 子弹与射击
-- [ ] AnimationPlayer 动画
-- [ ] Tween 补间
-- [ ] TileMap 关卡
-- [ ] 无人机敌人
-- [ ] 分组（groups）
-- [ ] 2D 光照
-- [ ] Shader 效果
+- [x] 搭建玩家场景
+- [x] 角色基础移动
+- [x] 子弹与射击
+- [x] AnimationPlayer 动画
+- [x] Tween 补间
+- [x] TileMap 关卡
+- [x] 无人机敌人
+- [x] 分组（groups）
+- [x] 2D 光照
+- [x] Shader 效果
+- [x] 标题界面与游戏结束流程
+
+**状态：已完成**，Windows 可执行版见 [Releases](https://github.com/salfzzz/godot-7-games/releases/tag/v1.0-metroid)。
+
+### 玩法
+
+| 操作 | 按键 |
+|---|---|
+| 开始 / 重新开始 | 空格 |
+| 左右移动 | A / D |
+| 跳跃 | 空格 |
+| 射击 | 鼠标左键 |
+
+无人机有 3 点生命值，击中后会被摧毁；被无人机撞到则游戏结束。
 
 进度详情见 [NOTES.md](NOTES.md)。
 
