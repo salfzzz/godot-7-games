@@ -112,9 +112,20 @@ var adjust_dir  = Vector2(round(raw_dir.x), round(raw_dir.y))    //再用round�
 	同时在无人机脚本中新建hit函数，设置血量为3，每触发1次函数，health值就-1,一旦值为0，则触发与爆炸销毁相同的逻辑（同上）
  
  - 准备实现连锁爆炸功能（一个无人机的爆炸会触发相邻无人机的爆炸）
+   1.首先要学习使用分组的方法，选中根节点（这里使用drone）在检查器的右边新建无人机分组   （get_tree().get_nodes_in_group("无人机") 可以查看场景树下"无人机"分组的全部内容
+   2. 了解完分组后，在无人机爆炸函数内准备实现"连锁爆炸"的功能  ,在爆炸函数内使用for drone in get_tree().get_nodes_in_group("无人机"):，由于其返回值是数组，可以进行for循环遍历
+		在里面加上if逻辑：读取分组中无人机的间距 (调用distance_to来比较)，间距小于一定的数值后，自动触发爆炸，未满足条件则不会同步爆炸
+   3.同时为了优化连锁爆炸的动画，需要在爆炸动画的animation player中 添加调用方法轨道，对指定的时间位置，触发插入的函数
 
-
-
+ - 处理灯光逻辑，需要用到Pointlight2d和directionallight2D，各个参数可通过右侧检查器调节，这里要把Pointlight2d绑定到角色根节点上，让角色常亮,同时导入资源文件夹中的光源，让指示牌亮起来
+	 后续还可以实现闪烁的效果，再level脚本中实现，同样使用tween帧间动画实现：
+	var light_tween = create_tween()
+	 light_tween.tween_property($GreenLight5,"energy",1.1,2) 来修改光源强度为1.1，持续2秒
+	 light_tween.tween_property($GreenLight5,"energy",0.9,2) 来修改光源强度为0.9，持续2秒
+	在再上面添加light_tween.set_loops() 设置无限循环  就可以实现指示牌灯光变化
+	
+	实现无人机灯光变化：要将pointlight挂载到无人机节点下，再调整大小和色彩，最后把pointlight加入到animationplayer中
+	根据energy的值来实现灯光的闪烁效果   
 ## 待办
 
 - [x] 搭建玩家场景（`scenes/player.tscn`）

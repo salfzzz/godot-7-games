@@ -47,4 +47,12 @@ func explode():  #专门用于处理爆炸销毁的函数
 		$ExpolsionSprite.show()  #播放默认隐藏后的爆炸动画
 		$AnimationPlayer.play("explorde") #进入爆炸检测范围后播放爆炸动画
 		await $AnimationPlayer.animation_finished  #在等待爆炸动画播放完毕之后（用await来等待animationplayer默认的finished函数）
+		for drone in get_tree().get_nodes_in_group("无人机"):
+			if position.distance_to(drone.position) < 20 :
+				drone.explode()
 		queue_free()   #删除无人机自身节点
+		
+func change_reaction():  #用于优化连锁爆炸的样式 ，不需要连锁爆炸的无人机再执行不必要的爆炸逻辑
+	for drone in get_tree().get_nodes_in_group("无人机"):
+		if position.distance_to(drone.position) < 20 :
+			drone.explode()		

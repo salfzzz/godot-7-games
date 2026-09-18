@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://vyr0ks75oxum" path="res://graphics/characters/drone.png" id="1_gs6nb"]
 [ext_resource type="Script" uid="uid://cqu8uq7o3bnde" path="res://scenes/entities/drone.gd" id="1_n87ok"]
 [ext_resource type="Texture2D" uid="uid://bav7n447bnsa5" path="res://graphics/fire/explosion.png" id="3_xcp44"]
+[ext_resource type="Texture2D" uid="uid://dijla4pisrrw8" path="res://graphics/lights/main.png" id="4_0tq5o"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_n87ok"]
 atlas = ExtResource("1_gs6nb")
@@ -60,6 +61,35 @@ tracks/0/keys = {
 "update": 1,
 "values": [0]
 }
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("PointLight2D:energy")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [2.36]
+}
+
+[sub_resource type="Animation" id="Animation_6vf5s"]
+resource_name = "Redlight"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PointLight2D:energy")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.4, 1.5]
+}
 
 [sub_resource type="Animation" id="Animation_0tq5o"]
 resource_name = "explorde"
@@ -76,17 +106,32 @@ tracks/0/keys = {
 "update": 1,
 "values": [0, 1, 2, 3, 4, 5, 6, 7]
 }
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.33333334),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"change_reaction"
+}]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_6vf5s"]
 _data = {
 &"RESET": SubResource("Animation_xcp44"),
+&"Redlight": SubResource("Animation_6vf5s"),
 &"explorde": SubResource("Animation_0tq5o")
 }
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vkdpk"]
 radius = 13.0
 
-[node name="Drone" type="CharacterBody2D" unique_id=1728772267]
+[node name="Drone" type="CharacterBody2D" unique_id=1728772267 groups=["无人机"]]
 collision_layer = 4
 collision_mask = 11
 script = ExtResource("1_n87ok")
@@ -94,13 +139,15 @@ script = ExtResource("1_n87ok")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=290271788]
 sprite_frames = SubResource("SpriteFrames_wp5od")
 autoplay = "default"
-frame_progress = 0.7423055
+frame_progress = 0.42606792
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1427291515]
+visible = false
 position = Vector2(-1, 1)
 shape = SubResource("CircleShape2D_wp5od")
 
 [node name="DetectionArea" type="Area2D" parent="." unique_id=529914808]
+visible = false
 collision_layer = 0
 collision_mask = 2
 
@@ -117,6 +164,7 @@ hframes = 8
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1050381523]
 libraries/ = SubResource("AnimationLibrary_6vf5s")
+autoplay = &"Redlight"
 
 [node name="CollisionArea" type="Area2D" parent="." unique_id=227430780]
 visible = false
@@ -125,6 +173,14 @@ collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CollisionArea" unique_id=460014441]
 shape = SubResource("CircleShape2D_vkdpk")
+
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=2081460646]
+position = Vector2(-2, 2)
+scale = Vector2(0.5, 0.5)
+color = Color(0.9389541, 4.5724214e-06, 1.540184e-06, 1)
+energy = 2.36
+texture = ExtResource("4_0tq5o")
+texture_scale = 0.1
 
 [connection signal="body_entered" from="DetectionArea" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="DetectionArea" to="." method="_on_detection_area_body_exited"]
