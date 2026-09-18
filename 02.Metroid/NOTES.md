@@ -32,23 +32,23 @@
 - 新建 Level 场景，文件存放在新建的 `scenes/levels/` 文件夹中
 - 在 Level 场景里新建了 StaticBody2D 和 CollisionShape2D
 - 新建玩家场景，并且挂载到了主场景中，编写基础移动代码脚本
-- 处理左右移动的代码，使用 get_input 函数，里面调用 ** get_axis() ** 来读取单个坐标轴的键盘输入，类似第一个游戏的 get_vector() 读取两个坐标轴输入
-- 继续处理跳跃操作，逻辑一致，用 ** Input.is_action_just_pressed() ** 来检测玩家是否按下了跳跃键，一旦检测到，则 velocity.y 需要改变为负值（因为负 y 轴在 godot 显示为向上跳跃）
+- 处理左右移动的代码，使用 get_input 函数，里面调用 `get_axis()` 来读取单个坐标轴的键盘输入，类似第一个游戏的 get_vector() 读取两个坐标轴输入
+- 继续处理跳跃操作，逻辑一致，用 `Input.is_action_just_pressed()` 来检测玩家是否按下了跳跃键，一旦检测到，则 velocity.y 需要改变为负值（因为负 y 轴在 godot 显示为向上跳跃）
 - 还要新建跳跃高度的变量 jump_strength，用于控制角色跳跃能达到的高度
 - 处理跳跃后的下落效果，创建 allpy_gravity() 函数，只需要让其执行自增操作，在画面中就能达到自然下落效果
 - 顺便给玩家节点挂载相机
 
 ### 射击与子弹
 
-- 实现开火键的输入读取，同时还要支持开火间隔：同样 Input.is_action_just_pressed() 检测，并且 ** 新建 timer 计时器 ** 来控制射击间隔（要设计为 one shot 单次触发）
+- 实现开火键的输入读取，同时还要支持开火间隔：同样 `Input.is_action_just_pressed()` 检测，并且**新建 timer 计时器**来控制射击间隔（要设计为 one shot 单次触发）
 - 当玩家按下按键且 timer 计时器已经等于 0 时，说明冷却时间已过，可以进行下一次射击，此时再次启动 timer 计时器
 - 开始实现发射子弹的逻辑，首先要给主场景挂载脚本，让子弹能出现在主场景中
 - `#signal shoot(pos :Vector2 , dir : Vector2 )` 新建发射信号，内部参数是子弹出发时的位置信息和方向向量
 - 处理自带信号中的方向向量参数（既射出的子弹的方向），需要使用到自带的函数 `#get_local_mouse_position()`，该函数能获取本地鼠标点击的坐标（以自身原点为参照）
 - 开始给子弹添加贴图，首先新建 bullet 的 area2D 场景，节点下再新建 sprite2d 节点和 collisionshape2d 用来展示贴图和碰撞模型
-- 为了让主场景里看到子弹的贴图，在 Level 主场景中新建 node2d 子节点 bullets 统一存放所有后续生成的子弹，同时在 level 的脚本中，定义变量 ** bullet——scene 来存放 preload（XXX/bullet.tscn）** 预加载子弹场景
-- 一旦玩家触发了子弹发射的信号，则生成一个子弹的实例，** bullet_scene 变量调用 instantiate() 函数 **
-- 之后再用 ** $Bullets.add_child(bullet) ** 将该实例作为子节点添加到主场景下的 bullet 节点下
+- 为了让主场景里看到子弹的贴图，在 Level 主场景中新建 node2d 子节点 bullets 统一存放所有后续生成的子弹，同时在 level 的脚本中，定义变量 `bullet_scene` 来存放 `preload(XXX/bullet.tscn)` 预加载子弹场景
+- 一旦玩家触发了子弹发射的信号，则生成一个子弹的实例，`bullet_scene` 变量调用 `instantiate()` 函数
+- 之后再用 `$Bullets.add_child(bullet)` 将该实例作为子节点添加到主场景下的 bullet 节点下
 - 接下来修改子弹初始生成的位置和方向，同样需要在 level 场景，接收到信号后，调用 bullet 脚本中自定义的 setup 函数，由 bullet 脚本来执行
 - setup 函数编写在 bullet 脚本中，里面用于处理子弹生成的位置和方向向量，同时还要在 `_physics_process` 新增子弹飞行的逻辑
 
@@ -62,18 +62,18 @@
 - 实现跳跃逻辑，用 character 自带的 on_the_floor 函数，检查角色是否在地面上，在地面上则播放待机或奔跑，不在则播放跳跃
 - 接下来进行躯干的动画处理，由于躯干的朝向取决于角色射击的方向，所以不能用 animationplayer 处理
 
-  处理方法如下：
+处理方法如下：
 
-  ```gdscript
-  同时构建字典对应八个射击方向
-  const gun_directions = {        #用于控制枪械朝向的字典
-  Vector2i(1,0) : 0 ,	Vector2i(1,1) : 1 ,	Vector2i(0,1) : 2 ,	Vector2i(-1,1) : 3 ,	Vector2i(-1,0) : 4 ,
-  	Vector2i(-1,-1) : 5 ,	Vector2i(0,-1) : 6 ,	Vector2i(1,-1) : 7
-  }
-  var raw_dir = get_local_mouse_position().normalized()   //获取鼠标指向的方向向量作为初始的方向向量
-  var adjust_dir  = Vector2(round(raw_dir.x), round(raw_dir.y))    //再用round（）函数对初始的数值进行四舍五入的处理，这样只会输出三个所需的值 （1，0，1）
-  最后调用 Torso.frame  = gun_direction[adjust_dir] 把转换后的方向生成的vector2值进行字典匹配，更改对应的躯干朝向
-  ```
+```gdscript
+同时构建字典对应八个射击方向
+const gun_directions = {        #用于控制枪械朝向的字典
+Vector2i(1,0) : 0 ,	Vector2i(1,1) : 1 ,	Vector2i(0,1) : 2 ,	Vector2i(-1,1) : 3 ,	Vector2i(-1,0) : 4 ,
+	Vector2i(-1,-1) : 5 ,	Vector2i(0,-1) : 6 ,	Vector2i(1,-1) : 7
+}
+var raw_dir = get_local_mouse_position().normalized()   //获取鼠标指向的方向向量作为初始的方向向量
+var adjust_dir  = Vector2(round(raw_dir.x), round(raw_dir.y))    //再用round（）函数对初始的数值进行四舍五入的处理，这样只会输出三个所需的值 （1，0，1）
+最后调用 Torso.frame  = gun_direction[adjust_dir] 把转换后的方向生成的vector2值进行字典匹配，更改对应的躯干朝向
+```
 
 ### 准星与 Tween
 
@@ -121,8 +121,8 @@
 
 - 实现子弹的射击逻辑时，由于子弹是由角色发射的，所以要在玩家节点新建信号，用于控制子弹的发射，**要注意新建信号后，需要在满足条件时进行信号的传输**
 - `get_local_mouse_position()` 会造成一个问题，得到的向量长度不一致，导致子弹飞行的距离有很大差异，此时需要调用 `#归一化方法normalized()`，将向量长度归一化为 1
-- 我进行子弹生成的开发时，发现当前子弹会始终出现在角色的左上角，原因询问 ai 后发现是 ** pos 的坐标系（Entities）和子弹的父节点坐标系（Bullets）不是同一个，你直接把数值搬过去了 **
-  - 暂时的修复方法是：在 level 的 2D 场景下，** 把 entities 节点和 bullets 节点都统一放在 0，0 原点处 **
+- 我进行子弹生成的开发时，发现当前子弹会始终出现在角色的左上角，原因询问 ai 后发现是**pos 的坐标系（Entities）和子弹的父节点坐标系（Bullets）不是同一个，你直接把数值搬过去了**
+  - 暂时的修复方法是：在 level 的 2D 场景下，**把 entities 节点和 bullets 节点都统一放在 0，0 原点处**
 - 此时运行时我发现子弹生成时看起来像从远方飞过来的，关掉物理插值后该问题解决，但是角色会产生剧烈抖动，待解决
 
 **动画朝向**
@@ -130,10 +130,10 @@
 - 完成跳跃动画逻辑后，发现小 bug：目前在向左跳跃的过程中，若在跳跃过程中松开 a 按键，会导致动画强制转向成右侧跳跃的样式
 - 修改方法：新建一个控制朝向的变量，在有输入的时候监测是否需要水平轴反转，如下列逻辑：
 
-  ```gdscript
-  func animation():
-  	if direction_x != 0:  //#如果存在左右方向非0
-  		facing = sign(direction_x)   //facing是控制朝向的变量
-  	$Legs.flip_h = facing < 0  //若朝向向量为负（既为左方向），此时facing为1，判断条件会返回true 则设置水平轴翻转
-  	...
-  ```
+```gdscript
+func animation():
+	if direction_x != 0:  //#如果存在左右方向非0
+		facing = sign(direction_x)   //facing是控制朝向的变量
+	$Legs.flip_h = facing < 0  //若朝向向量为负（既为左方向），此时facing为1，判断条件会返回true 则设置水平轴翻转
+	...
+```
