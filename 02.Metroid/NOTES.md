@@ -11,8 +11,14 @@
   - [角色动画](#角色动画)
   - [准星与 Tween](#准星与-tween)
   - [瓦片地图](#瓦片地图)
+- [2026-09-18](#2026-09-18)
+  - [无人机敌人实现](#无人机敌人实现)
+  - [连锁爆炸](#连锁爆炸)
+  - [灯光系统](#灯光系统)
+  - [着色器闪烁效果](#着色器闪烁效果)
+  - [收尾：音效与标题界面](#收尾音效与标题界面)
 - [待办](#待办)
-- [待确认的问题](#待确认的问题)
+- [问题记录](#问题记录)
 
 ---
 
@@ -89,85 +95,107 @@ var adjust_dir  = Vector2(round(raw_dir.x), round(raw_dir.y))    //再用round�
 - 准备实现瓦片地图，首先新建 tileMapLayer 节点，接着在检查器页面选择新建 tileset，在下部面的 tileset 将自身的瓦片集导入
 - 后续要新建多个瓦片集来摆放背景，物体，光源等贴图，同时为了让地形具有碰撞体，需要在下方 tileset 的选项中，选择"绘制"按钮，再选择回值物理层属性
 
--
+---
 
 ## 2026-09-18
 
 ### 无人机敌人实现
-- 1.首先新建characterbody2d节点用于创建无人机，后续给其添加animationedsprite2d节点，播放建议的帧动画
-  2.为了实现无人机检测攻击行为，需要新建area2d节点，并设置 coll检测范围，逻辑是：一旦角色进入到了无人机的检测范围，就会触发无人机的攻击，所以需要调用信号来处理
-  3.在area2d信号中选择body_entered信号，同时还要记得更改无人机（drone）和area2d的碰撞分层，area2d不被碰撞检测且只检测角色
-  4.接着在实现无人机的运行逻辑：只有在检测到玩家之后才会触发移动，所以要新建全局变量来获取当前玩家的坐标位置，如果角色进入到了检测范围，则用角色当前的位置坐标减去无人机的坐标，可以得到一组数值，拿这一组数值
-  5. 就可以当作方向向量，告知无人机向哪个方向移动   (同时还要记得调用normalized归一化，统一计算velocity)
-  6. 同样，还要实现角色离开检测范围后，无人机停止的逻辑，实现起来同样需要area2d的信号，使用的是body_exited,一旦接受到该讯号，则把全局变量player设置为null，这样就不会触发移动了
-  7. 这里再实现一个额外的功能：角色离开后不会立刻停止移动，而是在离开检测区域两秒后，在停止
-  解决方案：使用计时器节点，调用计时器的timeout信号，同时还要设置新的变量is_active来决定是否停止移动
-	进入时停止计时器，一旦角色一离开检测区域，计时器开始运行，一旦运行2秒结束后，is_active设置为false，is_active为false时，velocity设为zero
-  - 继续实现无人机碰撞到玩家实体执行爆炸的逻辑：
-  1. 首先新建spire2d节点存储爆炸动画的帧，接着这次使用animationplayer节点，将爆炸动画的帧导入，设置动画，接着给无人机新增一个area2d用于检测触发爆炸的区域，子节点选用colshape2d
-  2. 同样设置好对应的col的layer和mask（只识别角色，不识别其他）  ，调用其的body_entered（），一旦角色进入爆炸区域，则播放爆炸动画， （注意要把原来的无人机正常状态的实体hide掉）
-使用await函数等待动画播放完毕之后，使用queue_free删除爆炸的无人机
-  3. 还要实现子弹击中无人机，扣除血量并且销毁子弹的逻辑：在bullet脚本下的area2d种，调用bodyentered信号，一旦有实体（无人机或地形）进入，则销毁子弹实体
-	如果是击中无人机（用if"hit" in body 语句判断该实体是否具有hit函数）则触发hit函数
-	同时在无人机脚本中新建hit函数，设置血量为3，每触发1次函数，health值就-1,一旦值为0，则触发与爆炸销毁相同的逻辑（同上）
- 
- - 准备实现连锁爆炸功能（一个无人机的爆炸会触发相邻无人机的爆炸）
-   1.首先要学习使用分组的方法，选中根节点（这里使用drone）在检查器的右边新建无人机分组   （get_tree().get_nodes_in_group("无人机") 可以查看场景树下"无人机"分组的全部内容
-   2. 了解完分组后，在无人机爆炸函数内准备实现"连锁爆炸"的功能  ,在爆炸函数内使用for drone in get_tree().get_nodes_in_group("无人机"):，由于其返回值是数组，可以进行for循环遍历
-		在里面加上if逻辑：读取分组中无人机的间距 (调用distance_to来比较)，间距小于一定的数值后，自动触发爆炸，未满足条件则不会同步爆炸
-   3.同时为了优化连锁爆炸的动画，需要在爆炸动画的animation player中 添加调用方法轨道，对指定的时间位置，触发插入的函数
 
- - 处理灯光逻辑，需要用到Pointlight2d和directionallight2D，各个参数可通过右侧检查器调节，这里要把Pointlight2d绑定到角色根节点上，让角色常亮,同时导入资源文件夹中的光源，让指示牌亮起来
-	 后续还可以实现闪烁的效果，再level脚本中实现，同样使用tween帧间动画实现：
-	var light_tween = create_tween()
-	 light_tween.tween_property($GreenLight5,"energy",1.1,2) 来修改光源强度为1.1，持续2秒
-	 light_tween.tween_property($GreenLight5,"energy",0.9,2) 来修改光源强度为0.9，持续2秒
-	在再上面添加light_tween.set_loops() 设置无限循环  就可以实现指示牌灯光变化
-	
-	实现无人机灯光变化：要将pointlight挂载到无人机节点下，再调整大小和色彩，最后把pointlight加入到animationplayer中
-	根据energy的值来实现灯光的闪烁效果   
-	
-	- 编辑着色器
-	 着色器的编辑需要点击你想要调节的物体贴图的节点的“检查器”选项，其中Material中新建shader，shader类型分为多种，
-	 点击创建想要的shader类型后，再次点击圆球，可以展开编辑页面，右键编辑页面空白处可以新增节点，供操作使用
-	
-	为了实现闪烁，在shader编辑器中新建colorparameter，将其与“输出端”的Color连接，这样我们就能自由的在GDscript中修改贴图颜色
-	我们主要通过贴图的原图片和加上白色后的mix版本进行闪烁功能的实现，所以shader编辑器里要调用 ： (ColorParameter, 输入端的Color，FloatParameter，Mix和本身自带的输出端)
-	此时由于连接了ColorParameter和Floatparameter,我们可以在脚本里编写代码控制数值的变化。
-	在无人机脚本的hit函数中，调用	$AnimatedSprite2D.material.set_shader_parameter("Progress",0.0)  ，通过set_shader_parameter来调用修改参数
-		因为是为了实现闪烁，需要用动画控制，这里选用tween来控制，用这两行实现：
-	''     				( 需要修改的节点，对应节点对象的具体修改数据项，修改后的数值，持续的时间    )
-	tween.tween_property($AnimatedSprite2D.material , "shader_parameter/Progress,",0.0,0.3)	
-	tween.tween_property($AnimatedSprite2D.material , "shader_parameter/Progress,",1.0,0.5)	
-	''
-	
-	- 后续收尾
-	 1.给子弹添加射出音效，主要使用audiostreamplayer2d节点，并且在 bullet脚本中，一旦子弹生成，则 调用$AudioStreamPlayer2D.play()  ，播放音效。
-	 2. 同理，爆炸音效在爆炸函数内，一旦进入函数，先调用音效，但是会出现响2次的情况，所以我们在爆炸动画中新建音频轨道，这样触发一次动画，只播放一次音频
-	 3. 实现一些课程未涉及的方面，如标题界面，我才采用了两个标题，分别处理开始游戏和结束游戏，同时把游戏主场景设置为start_title,让其进行（按下空格）跳转的逻辑：
-	   ''
-	func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("jump"):
-		get_viewport().set_input_as_handled()   # 防止同一次按键被后续场景重复响应
-		get_tree().change_scene_to_file("res://scenes/levels/level.tscn")
-  ''
-	同时为了不在信号回调期间切换场景，采用延迟切换结束游戏场景的模式，创建 
-	''func go_to_end_title() -> void:
-	get_tree().change_scene_to_file("res://scenes/Title/end_title.tscn")
-	''
-	后，让爆炸函数里面延迟调用 go_to_end_title() ，既go_to_end_title().call_deferred  避免问题
+1. 首先新建 characterbody2d 节点用于创建无人机，后续给其添加 animationedsprite2d 节点，播放建议的帧动画
+2. 为了实现无人机检测攻击行为，需要新建 area2d 节点，并设置 coll 检测范围，逻辑是：一旦角色进入到了无人机的检测范围，就会触发无人机的攻击，所以需要调用信号来处理
+3. 在 area2d 信号中选择 body_entered 信号，同时还要记得更改无人机（drone）和 area2d 的碰撞分层，area2d 不被碰撞检测且只检测角色
+4. 接着在实现无人机的运行逻辑：只有在检测到玩家之后才会触发移动，所以要新建全局变量来获取当前玩家的坐标位置，如果角色进入到了检测范围，则用角色当前的位置坐标减去无人机的坐标，可以得到一组数值，拿这一组数值
+5. 就可以当作方向向量，告知无人机向哪个方向移动（同时还要记得调用 normalized 归一化，统一计算 velocity）
+6. 同样，还要实现角色离开检测范围后，无人机停止的逻辑，实现起来同样需要 area2d 的信号，使用的是 body_exited，一旦接受到该讯号，则把全局变量 player 设置为 null，这样就不会触发移动了
+7. 这里再实现一个额外的功能：角色离开后不会立刻停止移动，而是在离开检测区域两秒后，在停止
+
+   **解决方案**：使用计时器节点，调用计时器的 timeout 信号，同时还要设置新的变量 is_active 来决定是否停止移动。
+   进入时停止计时器，一旦角色一离开检测区域，计时器开始运行，一旦运行 2 秒结束后，is_active 设置为 false，is_active 为 false 时，velocity 设为 zero
+
+8. 继续实现无人机碰撞到玩家实体执行爆炸的逻辑：
+   1. 首先新建 spire2d 节点存储爆炸动画的帧，接着这次使用 animationplayer 节点，将爆炸动画的帧导入，设置动画，接着给无人机新增一个 area2d 用于检测触发爆炸的区域，子节点选用 colshape2d
+   2. 同样设置好对应的 col 的 layer 和 mask（只识别角色，不识别其他），调用其的 body_entered()，一旦角色进入爆炸区域，则播放爆炸动画（注意要把原来的无人机正常状态的实体 hide 掉）
+      使用 await 函数等待动画播放完毕之后，使用 queue_free 删除爆炸的无人机
+   3. 还要实现子弹击中无人机，扣除血量并且销毁子弹的逻辑：在 bullet 脚本下的 area2d 中，调用 bodyentered 信号，一旦有实体（无人机或地形）进入，则销毁子弹实体
+      - 如果是击中无人机（用 `if "hit" in body` 语句判断该实体是否具有 hit 函数）则触发 hit 函数
+      - 同时在无人机脚本中新建 hit 函数，设置血量为 3，每触发 1 次函数，health 值就 -1，一旦值为 0，则触发与爆炸销毁相同的逻辑（同上）
+
+### 连锁爆炸
+
+准备实现连锁爆炸功能（一个无人机的爆炸会触发相邻无人机的爆炸）
+
+1. 首先要学习使用分组的方法，选中根节点（这里使用 drone）在检查器的右边新建无人机分组（`get_tree().get_nodes_in_group("无人机")` 可以查看场景树下"无人机"分组的全部内容）
+2. 了解完分组后，在无人机爆炸函数内准备实现"连锁爆炸"的功能，在爆炸函数内使用 `for drone in get_tree().get_nodes_in_group("无人机"):`，由于其返回值是数组，可以进行 for 循环遍历
+   - 在里面加上 if 逻辑：读取分组中无人机的间距（调用 distance_to 来比较），间距小于一定的数值后，自动触发爆炸，未满足条件则不会同步爆炸
+3. 同时为了优化连锁爆炸的动画，需要在爆炸动画的 animation player 中添加调用方法轨道，对指定的时间位置，触发插入的函数
+
+### 灯光系统
+
+处理灯光逻辑，需要用到 Pointlight2d 和 directionallight2D，各个参数可通过右侧检查器调节。这里要把 Pointlight2d 绑定到角色根节点上，让角色常亮，同时导入资源文件夹中的光源，让指示牌亮起来。
+
+后续还可以实现闪烁的效果，在 level 脚本中实现，同样使用 tween 帧间动画实现：
+
+```gdscript
+var light_tween = create_tween()
+light_tween.tween_property($GreenLight5, "energy", 1.1, 2)   # 修改光源强度为1.1，持续2秒
+light_tween.tween_property($GreenLight5, "energy", 0.9, 2)   # 修改光源强度为0.9，持续2秒
+```
+
+再在上面添加 `light_tween.set_loops()` 设置无限循环，就可以实现指示牌灯光变化。
+
+实现无人机灯光变化：要将 pointlight 挂载到无人机节点下，再调整大小和色彩，最后把 pointlight 加入到 animationplayer 中，根据 energy 的值来实现灯光的闪烁效果。
+
+### 着色器闪烁效果
+
+着色器的编辑需要点击你想要调节的物体贴图的节点的"检查器"选项，其中 Material 中新建 shader，shader 类型分为多种，点击创建想要的 shader 类型后，再次点击圆球，可以展开编辑页面，右键编辑页面空白处可以新增节点，供操作使用。
+
+为了实现闪烁，在 shader 编辑器中新建 colorparameter，将其与"输出端"的 Color 连接，这样我们就能自由的在 GDscript 中修改贴图颜色。
+
+我们主要通过贴图的原图片和加上白色后的 mix 版本进行闪烁功能的实现，所以 shader 编辑器里要调用：（ColorParameter，输入端的 Color，FloatParameter，Mix 和本身自带的输出端）。
+
+此时由于连接了 ColorParameter 和 Floatparameter，我们可以在脚本里编写代码控制数值的变化。在无人机脚本的 hit 函数中，调用 `$AnimatedSprite2D.material.set_shader_parameter("Progress", 0.0)`，通过 set_shader_parameter 来调用修改参数。
+
+因为是为了实现闪烁，需要用动画控制，这里选用 tween 来控制，用这两行实现：
+
+```gdscript
+# tween_property( 需要修改的节点, 对应节点对象的具体修改数据项, 修改后的数值, 持续的时间 )
+tween.tween_property($AnimatedSprite2D.material, "shader_parameter/Progress", 0.0, 0.3)
+tween.tween_property($AnimatedSprite2D.material, "shader_parameter/Progress", 1.0, 0.5)
+```
+
+### 收尾：音效与标题界面
+
+1. 给子弹添加射出音效，主要使用 audiostreamplayer2d 节点，并且在 bullet 脚本中，一旦子弹生成，则调用 `$AudioStreamPlayer2D.play()`，播放音效。
+2. 同理，爆炸音效在爆炸函数内，一旦进入函数，先调用音效，但是会出现响 2 次的情况，所以我们在爆炸动画中新建音频轨道，这样触发一次动画，只播放一次音频
+3. 实现一些课程未涉及的方面，如标题界面。我采用了两个标题，分别处理开始游戏和结束游戏，同时把游戏主场景设置为 start_title，让其进行（按下空格）跳转的逻辑：
+
+   ```gdscript
+   func _unhandled_input(event: InputEvent) -> void:
+   	if event.is_action_pressed("jump"):
+   		get_viewport().set_input_as_handled()   # 防止同一次按键被后续场景重复响应
+   		get_tree().change_scene_to_file("res://scenes/levels/level.tscn")
+   ```
+
+   同时为了不在信号回调期间切换场景，采用延迟切换结束游戏场景的模式，创建：
+
+   ```gdscript
+   func go_to_end_title() -> void:
+   	get_tree().change_scene_to_file("res://scenes/Title/end_title.tscn")
+   ```
+
+   后，让爆炸函数里面延迟调用 `go_to_end_title()`，即 `go_to_end_title.call_deferred()`，避免问题。
+
+---
 
 ## 待办
 
 - [x] 搭建玩家场景（`scenes/player.tscn`）
 - [x] 写 `player.gd`，接上 `left` / `right` / `jump` 输入
-- [ ] 接入 `AnimationPlayer` 做待机 / 跑动 / 跳跃动画
+- [x] 接入 `AnimationPlayer` 做待机 / 跑动 / 跳跃动画
 
 ---
 
-## 待确认的问题
-
-<!-- 遇到问题记在这里，解决了就写答案 -->
+## 问题记录
 
 ### 9.17 开发问题记录
 
@@ -204,10 +232,8 @@ func animation():
 	...
 ```
 
+### 9.18 开发问题记录
 
-##9-18 w=问题记录
- 想实现角色离开检测区域后2秒内，无人机仍跟随原方向移动，后续发现是if的语句有问题，对veloity的运动使用，需要在整个func _physics_process(_delta: float) -> void:
-函数种使用，只有计时器时间超过2秒，触发停止，将velocity改为vector2.zero，其余时刻都正常向last_dir  * speed 方向移动
-
-实现击中无人机造成闪烁的过程中，射击之后所有无人机都会发生变色，解决方法是在shader相关页面中，点击 local_to_scene,即可
-处理爆炸声音时，会出现响2次的情况，所以我们在爆炸动画中新建音频轨道，这样触发一次动画，只播放一次音频
+- 想实现角色离开检测区域后 2 秒内，无人机仍跟随原方向移动，后续发现是 if 的语句有问题，对 veloity 的运动使用，需要在整个 `func _physics_process(_delta: float) -> void:` 函数中使用，只有计时器时间超过 2 秒，触发停止，将 velocity 改为 vector2.zero，其余时刻都正常向 `last_dir * speed` 方向移动
+- 实现击中无人机造成闪烁的过程中，射击之后所有无人机都会发生变色，解决方法是在 shader 相关页面中，点击 local_to_scene，即可
+- 处理爆炸声音时，会出现响 2 次的情况，所以我们在爆炸动画中新建音频轨道，这样触发一次动画，只播放一次音频
