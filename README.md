@@ -9,7 +9,7 @@
 |:---:|---|---|---|
 | 01 | [Frogger](01.Frogger/) | 2D 过马路 | ✅ 已完成（[可执行版](https://github.com/salfzzz/godot-7-games/releases/tag/v1.0-frogger)） |
 | 02 | [Metroid](02.Metroid/) | 2D 平台射击 | ✅ 已完成（[可执行版](https://github.com/salfzzz/godot-7-games/releases/tag/v1.0-metroid)） |
-| 03 | [Farming](03.Farming/) | 2D 农场经营 | ⬜ 未开始 |
+| 03 | [Farming](03.Farming/) | 2D 农场经营 | 🚧 进行中（初始工程已导入） |
 | 04 | [Monster](04.Monster/) | 回合制战斗 | ⬜ 未开始 |
 | 05 | [Space](05.Space/) | 3D 太空射击 | ⬜ 未开始 |
 | 06 | [3DPlatformer](06.3DPlatformer/) | 3D 平台跳跃 | ⬜ 未开始 |
